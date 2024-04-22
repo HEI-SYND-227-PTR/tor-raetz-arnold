@@ -28,7 +28,7 @@ void MacSender(void *argument)
 	.name = "WaitingQueue"
 	};
 	
-	waitingQueueId = osMessageQueueNew(2,sizeof(struct queueMsg_t),&waitingQueueAttr);	
+	waitingQueueId = osMessageQueueNew(4,sizeof(struct queueMsg_t),&waitingQueueAttr);	
 	
 	while(true){
 	osMessageQueueGet(queue_macS_id,&message,NULL,osWaitForever);
@@ -45,13 +45,43 @@ void MacSender(void *argument)
 			gTokenInterface.connected = false;
 			break;
 		case DATA_IND:
-			// TODO: put the data in a queue and wait to send the message
-			// check if the destination's SAPI is active or not
+		{
+			//Create a data Frame with DATA_IND's data and put it in the wait message queue
+			
+			uint8_t* ptr = osMemoryPoolAlloc(memPool,osWaitForever);// allocate some memory
+			
+			ptr[0] = (gTokenInterface.myAddress << 3) | message.sapi;	// control 1 (source Address + source SAPI)
+			ptr[1] = (message.addr <<3) | message.sapi; 							//control 2 (dest. address + dest. SAPI)
+			
+			// copy the data and calculate length
+			uint8_t length = 0;
+			while(data[length] != '\0'){
+				ptr[length+3] = data[length];
+				length++;
+			}
+			ptr[length+3] = '\0'; // also put \0 in the end of the data
+			
+			ptr[2] = (length+1);// add length in the frame
+			
+			uint8_t checksum = 0;
+			for(int i = 0; i < length+3;i++){
+				checksum += ptr[i];
+			}
+			
+			
+			ptr[length+4] = checksum << 2;// status (checksum + Read bit + Ack bit)
+			
+			struct queueMsg_t msg;
+			msg.anyPtr = ptr;
+			msg.type = TO_PHY;
+			
+			osMessageQueuePut(waitingQueueId,&msg,osPriorityNormal,osWaitForever);
+		}
 			break;
 		case TOKEN:
 		{
-			bool sendTokenList = false;
-			for(int i = 0; i < TOKENSIZE;i++){
+			bool sendTokenList = false;// flage used to know if we have to send a tokenList message to the lcd
+			for(int i = 0; i < TOKENSIZE;i++){ //Update station's available sapis
 				if(gTokenInterface.station_list[i] != data[i+1]){
 					gTokenInterface.station_list[i] = data[i+1];
 					sendTokenList = true;
@@ -63,16 +93,31 @@ void MacSender(void *argument)
 					osMessageQueuePut(queue_lcd_id,&tokenlistMessage,NULL,osWaitForever);
 			}
 			
-			// TODO: send messages
+			struct queueMsg_t dataToSend;
+			if(osMessageQueueGet(waitingQueueId,&dataToSend,NULL,0) == osOK){
+				osMessageQueuePut(queue_phyS_id,&dataToSend,NULL,osWaitForever);
+			}
+			else{
+				sendToken();
+			}
 			
-			sendToken();
+			
 		}
 			break;
 		case DATABACK:// when a message that we have send has made the turn => we need to check if it is Ack or not
 			// if not Ack, send the message back in the wait queue. (3 times maximum)
+		{
+			struct queueMsg_t dataToSend;
+			if(osMessageQueueGet(waitingQueueId,&dataToSend,NULL,0) == osOK){
+				osMessageQueuePut(queue_phyS_id,&dataToSend,NULL,osWaitForever);
+			}
+			else{
+				sendToken();
+			}		
+		}			
 			break;
 	}
-		osMemoryPoolFree(memPool,message.anyPtr);
+		osMemoryPoolFree(memPool,data);
 }
 }
 

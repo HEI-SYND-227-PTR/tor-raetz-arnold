@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\tokenring_project.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\tokenring_project.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Fri Apr 19 11:48:02 2024
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Mon Apr 22 14:38:19 2024
 <BR><P>
 <H3>Maximum Stack Usage =        576 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1831,8 +1831,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[198]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
 <LI><a href="#[19a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_EXTI_IRQHandler
-<LI><a href="#[19b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ScanCodeAnalyse
 <LI><a href="#[199]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SPI_Receive
+<LI><a href="#[19b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ScanCodeAnalyse
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f746xx.o(RESET)
 </UL>
@@ -2797,12 +2797,12 @@ Global Symbols
 <LI><a href="#[214]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_DMA_Abort
 <LI><a href="#[244]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;I2C_MasterTransmit
 <LI><a href="#[243]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;I2C_MasterReceive
-<LI><a href="#[290]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_WaitOnFlagUntilTimeout
-<LI><a href="#[238]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_CheckIdleState
 <LI><a href="#[22c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SPI_TransmitReceive
 <LI><a href="#[199]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SPI_Receive
 <LI><a href="#[22d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_WaitFlagStateUntilTimeout
 <LI><a href="#[280]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_WaitFifoStateUntilTimeout
+<LI><a href="#[290]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_WaitOnFlagUntilTimeout
+<LI><a href="#[238]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_CheckIdleState
 </UL>
 
 <P><STRONG><a name="[21e]"></a>HAL_InitTick</STRONG> (Thumb, 64 bytes, Stack size 16 bytes, stm32f7xx_hal.o(i.HAL_InitTick))
@@ -2964,17 +2964,17 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[233]"></a>HAL_UART_ErrorCallback</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32f7xx_hal_uart.o(i.HAL_UART_ErrorCallback))
-<BR><BR>[Called By]<UL><LI><a href="#[230]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_IRQHandler
-<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_DMAAbortOnError
+<BR><BR>[Called By]<UL><LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_DMAAbortOnError
+<LI><a href="#[230]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_IRQHandler
 </UL>
 
 <P><STRONG><a name="[230]"></a>HAL_UART_IRQHandler</STRONG> (Thumb, 366 bytes, Stack size 32 bytes, stm32f7xx_hal_uart.o(i.HAL_UART_IRQHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 208<LI>Call Chain = HAL_UART_IRQHandler &rArr; UART_EndTransmit_IT &rArr; HAL_UART_TxCpltCallback &rArr; osEventFlagsSet &rArr; osRtxPostProcess &rArr; osRtxKernelErrorNotify &rArr; EvrRtxKernelErrorNotify &rArr; EventRecord2 &rArr; EventRecordItem
 </UL>
 <BR>[Calls]<UL><LI><a href="#[232]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_DMA_Abort_IT
-<LI><a href="#[233]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_ErrorCallback
 <LI><a href="#[234]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_EndTransmit_IT
 <LI><a href="#[231]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_EndRxTransfer
+<LI><a href="#[233]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_ErrorCallback
 </UL>
 <BR>[Called By]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_IRQHandler
 </UL>
@@ -3070,7 +3070,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(i.main)
 </UL>
-<P><STRONG><a name="[94]"></a>MacReceiver</STRONG> (Thumb, 62 bytes, Stack size 16 bytes, mac_receiver.o(i.MacReceiver))
+<P><STRONG><a name="[94]"></a>MacReceiver</STRONG> (Thumb, 104 bytes, Stack size 16 bytes, mac_receiver.o(i.MacReceiver))
 <BR><BR>[Stack]<UL><LI>Max Depth = 200<LI>Call Chain = MacReceiver &rArr; osMessageQueuePut &rArr; isrRtxMessageQueuePut &rArr; osRtxPostProcess &rArr; osRtxKernelErrorNotify &rArr; EvrRtxKernelErrorNotify &rArr; EventRecord2 &rArr; EventRecordItem
 </UL>
 <BR>[Calls]<UL><LI><a href="#[18c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessageQueuePut
@@ -3079,10 +3079,11 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(i.main)
 </UL>
-<P><STRONG><a name="[95]"></a>MacSender</STRONG> (Thumb, 176 bytes, Stack size 48 bytes, mac_sender.o(i.MacSender))
-<BR><BR>[Stack]<UL><LI>Max Depth = 256<LI>Call Chain = MacSender &rArr; sendToken &rArr; osMessageQueuePut &rArr; isrRtxMessageQueuePut &rArr; osRtxPostProcess &rArr; osRtxKernelErrorNotify &rArr; EvrRtxKernelErrorNotify &rArr; EventRecord2 &rArr; EventRecordItem
+<P><STRONG><a name="[95]"></a>MacSender</STRONG> (Thumb, 372 bytes, Stack size 64 bytes, mac_sender.o(i.MacSender))
+<BR><BR>[Stack]<UL><LI>Max Depth = 272<LI>Call Chain = MacSender &rArr; sendToken &rArr; osMessageQueuePut &rArr; isrRtxMessageQueuePut &rArr; osRtxPostProcess &rArr; osRtxKernelErrorNotify &rArr; EvrRtxKernelErrorNotify &rArr; EventRecord2 &rArr; EventRecordItem
 </UL>
 <BR>[Calls]<UL><LI><a href="#[264]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sendToken
+<LI><a href="#[18e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMemoryPoolAlloc
 <LI><a href="#[18c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessageQueuePut
 <LI><a href="#[18a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessageQueueGet
 <LI><a href="#[196]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMemoryPoolFree
@@ -4211,8 +4212,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMutexNew
 </UL>
-<BR>[Called By]<UL><LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_gdispInitDriver
-<LI><a href="#[2bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_geventInit
+<BR>[Called By]<UL><LI><a href="#[2bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_geventInit
+<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_gdispInitDriver
 <LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_gtimerInit
 </UL>
 
@@ -5053,6 +5054,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[264]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sendToken
 <LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TimeSender
 <LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PhReceiver
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MacSender
 <LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DebugStation
 <LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ChatSender
 </UL>
@@ -5147,8 +5149,6 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_mutex_acquire
 <LI><a href="#[256]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gdispGClear
 <LI><a href="#[252]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gdispGFillArea
-<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_gdispInitDriver
-<LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_gdispDeInitDriver
 <LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gdispGSetClip
 <LI><a href="#[2ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gdispGFlush
 <LI><a href="#[2fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gdispGFillStringBox
@@ -5167,6 +5167,8 @@ Global Symbols
 <LI><a href="#[285]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;geventGetEventBuffer
 <LI><a href="#[2c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;geventDetachSourceListeners
 <LI><a href="#[2cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;geventAttachSource
+<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_gdispInitDriver
+<LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_gdispDeInitDriver
 <LI><a href="#[2bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gtimerStart
 <LI><a href="#[2d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gtimerJab
 <LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GTimerThreadHandler
@@ -5201,8 +5203,6 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[115]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_mutex_release
 <LI><a href="#[256]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gdispGClear
 <LI><a href="#[252]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gdispGFillArea
-<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_gdispInitDriver
-<LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_gdispDeInitDriver
 <LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gdispGSetClip
 <LI><a href="#[2ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gdispGFlush
 <LI><a href="#[2fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gdispGFillStringBox
@@ -5221,6 +5221,8 @@ Global Symbols
 <LI><a href="#[285]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;geventGetEventBuffer
 <LI><a href="#[2c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;geventDetachSourceListeners
 <LI><a href="#[2cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;geventAttachSource
+<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_gdispInitDriver
+<LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_gdispDeInitDriver
 <LI><a href="#[2bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gtimerStart
 <LI><a href="#[2d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gtimerJab
 <LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GTimerThreadHandler

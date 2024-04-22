@@ -16,7 +16,17 @@ void MacReceiver(void *argument)
 			osMessageQueuePut(queue_macS_id,&message,osPriorityNormal,osWaitForever);// we transmit the token to the Mac sender
 		}
 		else{
-			osMemoryPoolFree(memPool,message.anyPtr);
+				uint8_t mask = data[0] &0x78;
+				if(mask == gTokenInterface.myAddress <<3)// if the address source is my address
+				{
+					// send DATABACK message
+					message.type = DATABACK;
+					osMessageQueuePut(queue_macS_id,&message,osPriorityNormal,osWaitForever);
+				}
+				else
+					{
+				osMemoryPoolFree(memPool,message.anyPtr);
+				}
 		}
 		
 	}
