@@ -17,6 +17,13 @@
 			osMessageQueuePut(queue_phyS_id,&msg,osPriorityNormal,osWaitForever);// put the token message in the queue physic Send
 	}
 	
+	uint8_t calcChecksum(uint8_t* data, uint8_t length){
+		uint8_t result = 0;
+		for(int i = 0;i < result;i++){
+			result += data[i];
+		}
+		return result;
+}
 	
 
 void MacSender(void *argument)
@@ -63,10 +70,7 @@ void MacSender(void *argument)
 			
 			ptr[2] = (length+1);// add length in the frame
 			
-			uint8_t checksum = 0;
-			for(int i = 0; i < length+3;i++){
-				checksum += ptr[i];
-			}
+			uint8_t checksum = calcChecksum(ptr,length+3);
 			
 			
 			ptr[length+4] = checksum << 2;// status (checksum + Read bit + Ack bit)
@@ -104,8 +108,12 @@ void MacSender(void *argument)
 			
 		}
 			break;
-		case DATABACK:// when a message that we have send has made the turn => we need to check if it is Ack or not
+		case DATABACK:
+		
+			// when a message that we have send has made the turn => we need to check if it is Ack or not
 			// if not Ack, send the message back in the wait queue. (3 times maximum)
+		
+		// TODO: check if message has been read or ack, if not resend another message => we need to make a copy of the message that we have sent
 		{
 			struct queueMsg_t dataToSend;
 			if(osMessageQueueGet(waitingQueueId,&dataToSend,NULL,0) == osOK){
@@ -120,4 +128,5 @@ void MacSender(void *argument)
 		osMemoryPoolFree(memPool,data);
 }
 }
+
 
