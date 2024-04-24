@@ -17,12 +17,13 @@
 			osMessageQueuePut(queue_phyS_id,&msg,osPriorityNormal,osWaitForever);// put the token message in the queue physic Send
 	}
 	
-	uint8_t calcChecksum(uint8_t* data, uint8_t length){
-		uint8_t result = 0;
-		for(int i = 0;i < result;i++){
-			result += data[i];
-		}
-		return result;
+	
+uint8_t calcuCheckSum(uint8_t* data, uint8_t length){
+	uint8_t result = 0;
+	for(int i = 0;i < length;i++){
+		result += data[i];
+	}
+	return result;
 }
 	
 
@@ -43,7 +44,7 @@ void MacSender(void *argument)
 		
 	switch(message.type){
 		case NEW_TOKEN:
-			sendToken();
+			sendToken();// send a new token
 		break;
 	  case START:
 			gTokenInterface.connected = true;
@@ -70,7 +71,7 @@ void MacSender(void *argument)
 			
 			ptr[2] = (length+1);// add length in the frame
 			
-			uint8_t checksum = calcChecksum(ptr,length+3);
+			uint8_t checksum = calcuCheckSum(ptr,length+3);// calculate the checksum
 			
 			
 			ptr[length+4] = checksum << 2;// status (checksum + Read bit + Ack bit)
@@ -91,7 +92,7 @@ void MacSender(void *argument)
 					sendTokenList = true;
 				}
 			}
-			if(sendTokenList){
+			if(sendTokenList){// if the token list has changed since the last time, we advertise the LCD by sending a TOKEN_LIST message
 					struct queueMsg_t tokenlistMessage;
 					tokenlistMessage.type = TOKEN_LIST;
 					osMessageQueuePut(queue_lcd_id,&tokenlistMessage,NULL,osWaitForever);

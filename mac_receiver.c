@@ -3,7 +3,7 @@
 
 uint8_t calcCheckSum(uint8_t* data, uint8_t length){
 	uint8_t result = 0;
-	for(int i = 0;i < result;i++){
+	for(int i = 0;i < length;i++){
 		result += data[i];
 	}
 	return result;
@@ -38,19 +38,21 @@ void MacReceiver(void *argument)
 				}
 				else
 				{
-					if((calcCheckSum(data,dataLength)<<2) == (data[dataLength+3]&checksumMask)){// if checksum is correct
+					uint8_t receivedChecksum = (data[dataLength+3]&checksumMask);
+					uint8_t calculatedChecksum = (calcCheckSum(data,dataLength+3)<<2);
+					if(calculatedChecksum == receivedChecksum){// if checksum is correct
 						
-						if((data[1] & addressMask) == gTokenInterface.myAddress <<3 || (data[1] & addressMask) == 0xF <<3)// if the destination address is my address or broadcast
+						if(((data[1] & addressMask) == (gTokenInterface.myAddress <<3)) || ((data[1] & addressMask) == (0xF <<3)))// if the destination address is my address or broadcast
 						{	
 							uint8_t destSapi = data[1] & sapiMask;
-							if((destSapi == CHAT_SAPI && gTokenInterface.connected)|| destSapi == TIME_SAPI){ // if the targeted sapi match with one of our active sapis
+							if((destSapi == CHAT_SAPI && gTokenInterface.connected)|| (destSapi == TIME_SAPI)){ // if the targeted sapi match with one of our active sapis
 								uint8_t* ptr = osMemoryPoolAlloc(memPool,osWaitForever);// allocate memory		
 								struct queueMsg_t newMSG;
 								newMSG.type = DATA_IND;
 								newMSG.addr = (data[0] & addressMask)>>3;
 								newMSG.sapi = data[0] & sapiMask;
 								newMSG.anyPtr = ptr;
-								memcpy(ptr,data,dataLength);
+								memcpy(ptr,&data[3],dataLength);
 								
 								osMessageQueuePut((destSapi==CHAT_SAPI)?queue_chatR_id:queue_timeR_id,&newMSG,osPriorityNormal,osWaitForever);// send the message to the correct message queue
 							}				
