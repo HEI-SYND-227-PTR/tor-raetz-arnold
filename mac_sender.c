@@ -21,6 +21,21 @@
 			osMessageQueuePut(queue_phyS_id,&msg,osPriorityNormal,osWaitForever);// put the token message in the queue physic Send
 	}
 	
+	void sendNewToken(){
+		uint8_t* token = osMemoryPoolAlloc(memPool,osWaitForever);// allocate memory to create new token		
+
+			for(int i = 0; i < 15;i++){// reset memory to 0
+				token[i+1] = 0;
+			}
+			
+			struct queueMsg_t msg;// message to send
+			msg.anyPtr = token;
+			msg.type = TO_PHY;
+			token[0] = TOKEN_TAG; // put the token tag in the first byte
+			token[gTokenInterface.myAddress+1] = (1<<TIME_SAPI) + gTokenInterface.connected?(1<<CHAT_SAPI):0;// send our SAPI's state
+			osMessageQueuePut(queue_phyS_id,&msg,osPriorityNormal,osWaitForever);// put the token message in the queue physic Send
+	}
+	
 // function used to calculate the checksum of the data putted in entry	
 uint8_t calcuCheckSum(uint8_t* data, uint8_t length){
 	uint8_t result = 0;
@@ -37,7 +52,17 @@ void sendMacError(){
 		ptr = "Error, could not send message";// message for the lcd
 		msg.anyPtr = ptr;
 		msg.type = MAC_ERROR;
-		osMessageQueuePut(queue_lcd_id,&msg,NULL,osWaitForever);//send message
+		osMessageQueuePut(queue_lcd_id,&msg,osPriorityNormal,osWaitForever);//send message
+}
+
+void sendData(){
+		struct queueMsg_t dataToSend;
+		if(osMessageQueueGet(waitingQueueId,&dataToSend,(uint8_t*)osPriorityNormal,0) == osOK){
+			osMessageQueuePut(queue_phyS_id,&dataToSend,osPriorityNormal,osWaitForever);
+		}
+		else{
+			sendToken();
+		}
 }
 
 void MacSender(void *argument)
@@ -53,12 +78,12 @@ void MacSender(void *argument)
 	uint8_t nResend = 0;// used to count how many times we have resent a message non acknowledged
 	
 	while(true){
-	osMessageQueueGet(queue_macS_id,&macSmessage,NULL,osWaitForever);
+	osMessageQueueGet(queue_macS_id,&macSmessage,(uint8_t*)osPriorityNormal,osWaitForever);
 	data = macSmessage.anyPtr;
 		
 	switch(macSmessage.type){
 		case NEW_TOKEN:
-			sendToken();// send a new token
+			sendNewToken();// send a new token
 		break;
 	  case START:
 			gTokenInterface.connected = true;
@@ -86,8 +111,7 @@ void MacSender(void *argument)
 			ptr[2] = (length+1);// add length in the frame
 			
 			uint8_t checksum = calcuCheckSum(ptr,length+3);// calculate the checksum
-			
-			
+				
 			ptr[length+4] = checksum << 2;// status (checksum + Read bit + Ack bit)
 			
 			struct queueMsg_t msg;
@@ -109,17 +133,9 @@ void MacSender(void *argument)
 			if(sendTokenList){// if the token list has changed since the last time, we advertise the LCD by sending a TOKEN_LIST message
 					struct queueMsg_t tokenlistMessage;
 					tokenlistMessage.type = TOKEN_LIST;
-					osMessageQueuePut(queue_lcd_id,&tokenlistMessage,NULL,osWaitForever);
+					osMessageQueuePut(queue_lcd_id,&tokenlistMessage,osPriorityNormal,osWaitForever);
 			}
-			
-			struct queueMsg_t dataToSend;
-			if(osMessageQueueGet(waitingQueueId,&dataToSend,NULL,0) == osOK){
-				osMessageQueuePut(queue_phyS_id,&dataToSend,NULL,osWaitForever);
-			}
-			else{
-				sendToken();
-			}
-			
+			sendData();			
 			
 		}
 			break;
@@ -127,27 +143,23 @@ void MacSender(void *argument)
 		{
 			struct queueMsg_t dataToSend;
 			uint8_t dataLength = data[2];
-		
-		if(((data[dataLength+3] & 0x3) != 0x3) && (nResend < 2) && ((data[1] & 0x78) != (0xF <<3))){// check read and ack bit, check nResend (must not be = 2), check that it is not a broadcast frame
-			// if the message has not be acknowledged, we need to resend it
+			uint8_t readAck = (data[dataLength+3] & ACK_READ_MASK);
+			uint8_t destAddress = ((data[1] & ADDRESS_MASK)>>3);
+		if((readAck != 0x3) && (nResend < 2) && (destAddress != 0xF)){// check read and ack bit, check nResend (must not be = 2), check that it is not a broadcast frame
+			// if the message is not acknowledged
 			nResend ++;
 			data[dataLength+3] = (data[dataLength+3] & 0xFC); // reset read and ack bits
 			uint8_t *ptr = osMemoryPoolAlloc(memPool,osWaitForever);
 			memcpy(ptr,data,dataLength+4);
 			macSmessage.anyPtr = ptr;
-			osMessageQueuePut(queue_phyS_id,&macSmessage,NULL,osWaitForever);
+			osMessageQueuePut(queue_phyS_id,&macSmessage,osPriorityNormal,osWaitForever);// send back the message
 		}
 		else{
 				if(nResend == 2){
 					sendMacError();
 				}
 				nResend = 0;// reset the counter
-				if(osMessageQueueGet(waitingQueueId,&dataToSend,NULL,0) == osOK){//check if there is messages to send
-					osMessageQueuePut(queue_phyS_id,&dataToSend,NULL,osWaitForever);// if yes, send it to physic sender
-				}
-				else{
-					sendToken();// if no more messages to send, send the token to the next station
-				}	
+				sendData();
 			}				
 		}			
 			break;
