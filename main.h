@@ -16,8 +16,8 @@
 //--------------------------------------------------------------------------------
 // Constants to change the system behavior
 //--------------------------------------------------------------------------------
-#define DEBUG_MODE				1					// mode is physical line (0) or debug (1)
-#define MYADDRESS   			3					// your address choice (table number)
+#define DEBUG_MODE				0					// mode is physical line (0) or debug (1)
+#define MYADDRESS   			4					// your address choice (table number)
 #define MAX_BLOCK_SIZE 		100				// size max for a frame
 
 //--------------------------------------------------------------------------------
@@ -31,6 +31,14 @@
 #define STX 							0x02			// any frame start char
 #define ETX								0x03			// any frame end char
 #define CONTINUE					0x0				// for check return code halt
+
+//--------------------------------------------------------------------------------
+// masks used to extract address, sapi and checksum
+//--------------------------------------------------------------------------------
+#define ADDRESS_MASK  		0x78
+#define SAPI_MASK 				0x7
+#define CHECKSUM_MASK  		0xFC
+#define ACK_READ_MASK			0x03
 
 //--------------------------------------------------------------------------------
 // identifiers used in more the one file (thread)
