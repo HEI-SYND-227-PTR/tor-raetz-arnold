@@ -9,7 +9,7 @@
 	void sendToken(){
 			uint8_t* token = osMemoryPoolAlloc(memPool,osWaitForever);// allocate memory to create new token		
 
-			for(int i = 0; i < TOKENSIZE;i++){// get all the stations's SAPI state and put them in the frame
+			for(int i = 0; i < 15;i++){// get all the stations's SAPI state and put them in the frame
 				token[i+1] = gTokenInterface.station_list[i];
 			}
 			
