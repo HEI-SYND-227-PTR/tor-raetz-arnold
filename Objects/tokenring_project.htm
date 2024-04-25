@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\tokenring_project.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\tokenring_project.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Apr 25 20:14:25 2024
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Apr 25 21:14:08 2024
 <BR><P>
 <H3>Maximum Stack Usage =        576 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -3096,7 +3096,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(i.main)
 </UL>
-<P><STRONG><a name="[97]"></a>MacSender</STRONG> (Thumb, 402 bytes, Stack size 48 bytes, mac_sender.o(i.MacSender))
+<P><STRONG><a name="[97]"></a>MacSender</STRONG> (Thumb, 442 bytes, Stack size 48 bytes, mac_sender.o(i.MacSender))
 <BR><BR>[Stack]<UL><LI>Max Depth = 272<LI>Call Chain = MacSender &rArr; sendData &rArr; sendToken &rArr; osMessageQueuePut &rArr; isrRtxMessageQueuePut &rArr; osRtxPostProcess &rArr; osRtxKernelErrorNotify &rArr; EvrRtxKernelErrorNotify &rArr; EventRecord2 &rArr; EventRecordItem
 </UL>
 <BR>[Calls]<UL><LI><a href="#[268]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sendNewToken
@@ -5758,7 +5758,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MacSender
 </UL>
 
-<P><STRONG><a name="[268]"></a>sendNewToken</STRONG> (Thumb, 84 bytes, Stack size 24 bytes, mac_sender.o(i.sendNewToken))
+<P><STRONG><a name="[268]"></a>sendNewToken</STRONG> (Thumb, 92 bytes, Stack size 24 bytes, mac_sender.o(i.sendNewToken))
 <BR><BR>[Stack]<UL><LI>Max Depth = 208<LI>Call Chain = sendNewToken &rArr; osMessageQueuePut &rArr; isrRtxMessageQueuePut &rArr; osRtxPostProcess &rArr; osRtxKernelErrorNotify &rArr; EvrRtxKernelErrorNotify &rArr; EventRecord2 &rArr; EventRecordItem
 </UL>
 <BR>[Calls]<UL><LI><a href="#[190]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMemoryPoolAlloc
@@ -5767,7 +5767,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MacSender
 </UL>
 
-<P><STRONG><a name="[395]"></a>sendToken</STRONG> (Thumb, 90 bytes, Stack size 24 bytes, mac_sender.o(i.sendToken))
+<P><STRONG><a name="[395]"></a>sendToken</STRONG> (Thumb, 108 bytes, Stack size 24 bytes, mac_sender.o(i.sendToken))
 <BR><BR>[Stack]<UL><LI>Max Depth = 208<LI>Call Chain = sendToken &rArr; osMessageQueuePut &rArr; isrRtxMessageQueuePut &rArr; osRtxPostProcess &rArr; osRtxKernelErrorNotify &rArr; EvrRtxKernelErrorNotify &rArr; EventRecord2 &rArr; EventRecordItem
 </UL>
 <BR>[Calls]<UL><LI><a href="#[190]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMemoryPoolAlloc

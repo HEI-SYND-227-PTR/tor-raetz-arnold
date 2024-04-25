@@ -17,7 +17,11 @@
 			msg.anyPtr = token;
 			msg.type = TO_PHY;
 			token[0] = TOKEN_TAG; // put the token tag in the first byte
-			token[gTokenInterface.myAddress+1] = (1<<TIME_SAPI) + gTokenInterface.connected?(1<<CHAT_SAPI):0;// send our SAPI's state
+			
+			token[gTokenInterface.myAddress+1] = (1<<TIME_SAPI);
+			if(gTokenInterface.connected){
+				token[gTokenInterface.myAddress+1] |= (1<<CHAT_SAPI);
+			}
 			osMessageQueuePut(queue_phyS_id,&msg,osPriorityNormal,osWaitForever);// put the token message in the queue physic Send
 	}
 	
@@ -32,7 +36,11 @@
 			msg.anyPtr = token;
 			msg.type = TO_PHY;
 			token[0] = TOKEN_TAG; // put the token tag in the first byte
-			token[gTokenInterface.myAddress+1] = (1<<TIME_SAPI) + gTokenInterface.connected?(1<<CHAT_SAPI):0;// send our SAPI's state
+			
+			token[gTokenInterface.myAddress+1] = (1<<TIME_SAPI);
+			token[gTokenInterface.myAddress+1] |= (1<<CHAT_SAPI);// by default, I say that chat SAPI is connected
+
+			
 			osMessageQueuePut(queue_phyS_id,&msg,osPriorityNormal,osWaitForever);// put the token message in the queue physic Send
 	}
 	
@@ -87,9 +95,11 @@ void MacSender(void *argument)
 		break;
 	  case START:
 			gTokenInterface.connected = true;
+			gTokenInterface.station_list[gTokenInterface.myAddress] = gTokenInterface.station_list[gTokenInterface.myAddress] | (1<<CHAT_SAPI);//set chat SAPI's bit
 			break;
 		case STOP:
 			gTokenInterface.connected = false;
+			gTokenInterface.station_list[gTokenInterface.myAddress] = (gTokenInterface.station_list[gTokenInterface.myAddress] & 0xFD);//reset chat SAPI's bit
 			break;
 		case DATA_IND:
 		{
