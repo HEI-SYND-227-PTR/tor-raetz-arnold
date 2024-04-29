@@ -1,6 +1,6 @@
 #include "main.h"
 #include "stm32f7xx_hal.h"
-
+#include <string.h>
 
 	osMessageQueueId_t waitingQueueId; // waiting queue used to store all the DATA_IND message before we can send them
 	
@@ -25,6 +25,7 @@
 			osMessageQueuePut(queue_phyS_id,&msg,osPriorityNormal,osWaitForever);// put the token message in the queue physic Send
 	}
 	
+	// this function send a new token frame in the ring
 	void sendNewToken(){
 		uint8_t* token = osMemoryPoolAlloc(memPool,osWaitForever);// allocate memory to create new token		
 
@@ -56,16 +57,29 @@ uint8_t calcuCheckSum(uint8_t* data, uint8_t length){
 // function used to send an error to the LCD when we can't send a message to a specific station
 void sendMacError(){
 		struct queueMsg_t msg;// message to send
-		uint8_t* ptr = osMemoryPoolAlloc(memPool,osWaitForever);// allocate memory 
-		ptr = "Error, could not send message";// message for the lcd
-		msg.anyPtr = ptr;
-		msg.type = MAC_ERROR;
-		osMessageQueuePut(queue_lcd_id,&msg,osPriorityNormal,osWaitForever);//send message
+		uint8_t* ptr = NULL;
+		uint8_t* message = "Error, could not send message\n";
+	
+		ptr = osMemoryPoolAlloc(memPool,osWaitForever);// allocate memory 
+		if(ptr != NULL){	
+			memcpy(ptr,message,31);	// copy the message in ptr
+			msg.anyPtr = ptr;
+			msg.type = MAC_ERROR;
+			osMessageQueuePut(queue_lcd_id,&msg,osPriorityNormal,osWaitForever);//send message
+		}
 }
 
+// this function sends all the data in the waiting queue and when there is no more data to send, it calls the sendtoken funcion
 void sendData(){
 		struct queueMsg_t dataToSend;
 		if(osMessageQueueGet(waitingQueueId,&dataToSend,(uint8_t*)osPriorityNormal,0) == osOK){
+			
+		uint8_t* ptr = dataToSend.anyPtr;
+		if(ptr[0] != 0x21)
+		{
+			printf("error\n");									
+		}
+			
 			osMessageQueuePut(queue_phyS_id,&dataToSend,osPriorityNormal,osWaitForever);
 		}
 		else{
@@ -128,7 +142,10 @@ void MacSender(void *argument)
 			msg.anyPtr = ptr;
 			msg.type = TO_PHY;
 			
-			osMessageQueuePut(waitingQueueId,&msg,osPriorityNormal,osWaitForever);
+			//osMessageQueuePut(waitingQueueId,&msg,osPriorityNormal,osWaitForever);
+			if(osMessageQueuePut(waitingQueueId,&msg,osPriorityNormal,0) != osOK){// if we can't put the message in the queue
+				osMemoryPoolFree(memPool,data);//release memory
+			}
 		}
 			break;
 		case TOKEN:
@@ -162,6 +179,10 @@ void MacSender(void *argument)
 			uint8_t *ptr = osMemoryPoolAlloc(memPool,osWaitForever);
 			memcpy(ptr,data,dataLength+4);
 			macSmessage.anyPtr = ptr;
+			if(ptr[0] != 0x21)
+			{
+				printf("error\n");									
+			}
 			osMessageQueuePut(queue_phyS_id,&macSmessage,osPriorityNormal,osWaitForever);// send back the message
 		}
 		else{

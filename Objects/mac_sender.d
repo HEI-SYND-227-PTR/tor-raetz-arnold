@@ -97,3 +97,4 @@
 .\objects\mac_sender.o: C:\Keil_v5\uGFX\uGFX_lib\2.0.0\ugfx\src/gadc/gadc.h
 .\objects\mac_sender.o: C:\Keil_v5\uGFX\uGFX_lib\2.0.0\ugfx\src/gaudio/gaudio.h
 .\objects\mac_sender.o: gui.h
+.\objects\mac_sender.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

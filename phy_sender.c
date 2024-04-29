@@ -40,7 +40,9 @@ void rs232_send(uint8_t byte, uint8_t counter)
 		eventFlag_id,
 		RS232_TX_EVENT,
 		osFlagsWaitAny,
-		10); 	
+		10); 
+
+	
 	if((eventFlag < 0)&&				// case of error
 		(eventFlag != -2))				// but not a timeout
 			CheckRetCode(eventFlag,__LINE__,__FILE__,CONTINUE);	
@@ -97,6 +99,8 @@ void PhSender(void *argument)
 			osWaitForever); 	
     CheckRetCode(retCode,__LINE__,__FILE__,CONTINUE);
 		qPtr = queueMsg.anyPtr;
+		
+		
 		if(qPtr[0] == TOKEN_TAG)
 		{
 			Ext_LED_PWM(1,0);										// token is out of station

@@ -65,7 +65,7 @@ void MacReceiver(void *argument)
 					memcpy(ptr,rxData,dataLength+4);// copy the data
 				
 					// update read and ack bits if I was the sender
-					if(calculatedChecksum == receivedChecksum && destAddress == gTokenInterface.myAddress){
+					if((calculatedChecksum == receivedChecksum) && (destAddress == gTokenInterface.myAddress)){
 							ptr[dataLength+3] |= 0x3; // Put read and Ack bits to 1
 						}
 						else{
@@ -76,6 +76,7 @@ void MacReceiver(void *argument)
 			}		
 			// to physical layer
 			else{
+
 					uint8_t* ptr = osMemoryPoolAlloc(memPool,osWaitForever);// allocate memory		
 					struct queueMsg_t newMSG;
 					newMSG.type = TO_PHY;
@@ -88,6 +89,11 @@ void MacReceiver(void *argument)
 						else{
 							ptr[dataLength+3] |= 0x2; // Put read bit to 1 and Ack bit to 0
 						}
+					}
+					
+					if(ptr[0] != 0x21)
+					{
+						printf("error\n");									
 					}
 					osMessageQueuePut(queue_phyS_id,&newMSG,osPriorityNormal,osWaitForever); // send back message to physic layer
 			}
