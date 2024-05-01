@@ -100,7 +100,6 @@ void PhSender(void *argument)
     CheckRetCode(retCode,__LINE__,__FILE__,CONTINUE);
 		qPtr = queueMsg.anyPtr;
 		
-		
 		if(qPtr[0] == TOKEN_TAG)
 		{
 			Ext_LED_PWM(1,0);										// token is out of station

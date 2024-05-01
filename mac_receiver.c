@@ -1,6 +1,6 @@
 #include "main.h"
 #include "stm32f7xx_hal.h"
-
+#include <string.h> 
 		
 uint8_t calcCheckSum(uint8_t* data, uint8_t length){
 	uint8_t result = 0;
@@ -41,8 +41,8 @@ void MacReceiver(void *argument)
 			uint8_t destSapi = (rxData[1] & SAPI_MASK);
 			
 			// send to TIME or chat
-			if(calculatedChecksum == receivedChecksum){
-				if((destAddress == gTokenInterface.myAddress) || (destAddress == 0xF)){
+			if((destAddress == gTokenInterface.myAddress) || (destAddress == 0xF)){
+				if(calculatedChecksum == receivedChecksum){// check if CRC is correct
 					if(((destSapi == CHAT_SAPI) && (gTokenInterface.connected))||(destSapi == TIME_SAPI)){ // if the targeted sapi match with one of our active sapis
 							uint8_t* ptr = osMemoryPoolAlloc(memPool,osWaitForever);// allocate memory		
 							struct queueMsg_t newMSG;
@@ -51,8 +51,12 @@ void MacReceiver(void *argument)
 							newMSG.sapi = sourcesapi;// indicate the source's SAPI
 							newMSG.anyPtr = ptr;
 							memcpy(ptr,&rxData[3],dataLength);// copy the data
-							osMessageQueuePut((destSapi==CHAT_SAPI)?queue_chatR_id:queue_timeR_id,&newMSG,osPriorityNormal,osWaitForever);// send the message to the correct message queue
-					}
+							ptr[dataLength] = 0;
+							//osMessageQueuePut((destSapi==CHAT_SAPI)?queue_chatR_id:queue_timeR_id,&newMSG,osPriorityNormal,osWaitForever);// send the message to the correct message queue
+							if(osMessageQueuePut((destSapi==CHAT_SAPI)?queue_chatR_id:queue_timeR_id,&newMSG,osPriorityNormal,0)!= osOK){// send the message to the correct message queue
+								osMemoryPoolFree(memPool,ptr);//release memory if we can't put theb message in the queue
+							}
+						}
 				}
 			}
 			
@@ -71,6 +75,7 @@ void MacReceiver(void *argument)
 						else{
 							ptr[dataLength+3] |= 0x2; // Put read bit to 1 and Ack bit to 0
 					}
+
 					osMessageQueuePut(queue_macS_id,&newMSG,osPriorityNormal,osWaitForever);//send to macS
 				
 			}		
@@ -91,12 +96,9 @@ void MacReceiver(void *argument)
 						}
 					}
 					
-					if(ptr[0] != 0x21)
-					{
-						printf("error\n");									
-					}
 					osMessageQueuePut(queue_phyS_id,&newMSG,osPriorityNormal,osWaitForever); // send back message to physic layer
 			}
+
 			
 		}
 		osMemoryPoolFree(memPool,rxData);// release the memory

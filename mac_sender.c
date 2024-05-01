@@ -1,6 +1,6 @@
 #include "main.h"
 #include "stm32f7xx_hal.h"
-#include <string.h>
+#include <string.h> 
 
 	osMessageQueueId_t waitingQueueId; // waiting queue used to store all the DATA_IND message before we can send them
 	
@@ -22,6 +22,7 @@
 			if(gTokenInterface.connected){
 				token[gTokenInterface.myAddress+1] |= (1<<CHAT_SAPI);
 			}
+			
 			osMessageQueuePut(queue_phyS_id,&msg,osPriorityNormal,osWaitForever);// put the token message in the queue physic Send
 	}
 	
@@ -75,10 +76,6 @@ void sendData(){
 		if(osMessageQueueGet(waitingQueueId,&dataToSend,(uint8_t*)osPriorityNormal,0) == osOK){
 			
 		uint8_t* ptr = dataToSend.anyPtr;
-		if(ptr[0] != 0x21)
-		{
-			printf("error\n");									
-		}
 			
 			osMessageQueuePut(queue_phyS_id,&dataToSend,osPriorityNormal,osWaitForever);
 		}
@@ -142,6 +139,7 @@ void MacSender(void *argument)
 			msg.anyPtr = ptr;
 			msg.type = TO_PHY;
 			
+					
 			//osMessageQueuePut(waitingQueueId,&msg,osPriorityNormal,osWaitForever);
 			if(osMessageQueuePut(waitingQueueId,&msg,osPriorityNormal,0) != osOK){// if we can't put the message in the queue
 				osMemoryPoolFree(memPool,data);//release memory
@@ -179,10 +177,6 @@ void MacSender(void *argument)
 			uint8_t *ptr = osMemoryPoolAlloc(memPool,osWaitForever);
 			memcpy(ptr,data,dataLength+4);
 			macSmessage.anyPtr = ptr;
-			if(ptr[0] != 0x21)
-			{
-				printf("error\n");									
-			}
 			osMessageQueuePut(queue_phyS_id,&macSmessage,osPriorityNormal,osWaitForever);// send back the message
 		}
 		else{
